@@ -72,11 +72,21 @@ const AttentionModule = ({ inputText }) => {
     const baseR = baseColor === "red" ? 200 : 0;
     const baseG = baseColor === "green" ? 200 : 0;
     const baseB = baseColor === "blue" ? 200 : 0;
+    const baseO = baseColor === "orange" ? 200 : 0; // Added for orange base
+
+    let r = baseR;
+    let g = baseG;
+    let b = baseB;
+
+    if (baseColor === "orange") {
+        r = 255; g = 165; b = 0; // Orange color components
+    }
+
     return {
       width: 25,
       height: 25,
       margin: 1,
-      backgroundColor: `rgba(${baseR},${baseG},${baseB},${Math.max(
+      backgroundColor: `rgba(${r},${g},${b},${Math.max(
         0.08,
         Math.min(val, 1)
       )})`,
@@ -105,15 +115,7 @@ const AttentionModule = ({ inputText }) => {
   };
 
   const isVCellHighlighted = (vRowIdx, vColIdx) => {
-    if (!hovered) return false;
-    // if hovering a score/weight cell, highlight the V row corresponding to the key (cIdx)
-    if (
-      (hovered.type === "score" || hovered.type === "weight") &&
-      hovered.cIdx === vRowIdx
-    )
-      return true;
-    // if hovering an output component, highlight that column across V (vColIdx)
-    if (hovered.type === "output" && hovered.cIdx === vColIdx) return true;
+    // Disable highlighting for the Value (V) matrix — keep V visually stable.
     return false;
   };
 
@@ -134,7 +136,15 @@ const AttentionModule = ({ inputText }) => {
     : 1;
 
   return (
-    <div style={{ padding: 20, fontFamily: "Arial, sans-serif" }}>
+    <div
+      style={{
+        padding: 20,
+        fontFamily: "Arial, sans-serif",
+        display: "flex", // Make outter div flex
+        flexDirection: "column", // Stack items vertically
+        alignItems: "center", // Center items horizontally
+      }}
+    >
       <h2>Attention Module</h2>
       <p>
         Hover over Q·Kᵀ, attention, or output elements to highlight
@@ -142,7 +152,15 @@ const AttentionModule = ({ inputText }) => {
       </p>
 
       {/* Q, K and V matrices */}
-      <div style={{ display: "flex", gap: 40, marginBottom: 20 }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 40,
+          marginBottom: 20,
+          justifyContent: "center", // Center the inner elements horizontally
+          width: "100%", // Take up full width for centering
+        }}
+      >
         {/* Q */}
         <div>
           <p>
@@ -228,7 +246,15 @@ const AttentionModule = ({ inputText }) => {
       </div>
 
       {/* Q·Kᵀ */}
-      <div style={{ marginBottom: 20 }}>
+      <div
+        style={{
+          marginBottom: 20,
+          display: "flex", // Make this section container flex
+          flexDirection: "column", // Stack items vertically
+          alignItems: "center", // Center items horizontally
+          width: "100%", // Take up full width for centering
+        }}
+      >
         <p>
           <strong>Q·Kᵀ Scores:</strong>
         </p>
@@ -254,9 +280,19 @@ const AttentionModule = ({ inputText }) => {
       </div>
 
       {/* Component-wise contributions (reserved area to avoid layout shifts) */}
-      <div style={{ marginBottom: 18, minHeight: 120, position: "relative" }}>
+      <div
+        style={{
+          marginBottom: 18,
+          minHeight: 120,
+          position: "relative",
+          display: "flex", // Make this section container flex
+          flexDirection: "column", // Stack items vertically
+          alignItems: "center", // Center content horizontally
+          width: "100%", // Take up full width for centering
+        }}
+      >
         <div style={{ position: "absolute", left: 0, right: 0, top: 0 }}>
-          <p>
+          <p style={{ textAlign: "center" }}>
             <strong>Component-wise contributions (q_i · k_i / √d):</strong>
           </p>
         </div>
@@ -264,7 +300,14 @@ const AttentionModule = ({ inputText }) => {
         {/* Render bars only when scoreContributions exists; kept absolutely positioned to prevent reflow */}
         {scoreContributions && (
           <div style={{ position: "absolute", left: 0, right: 0, top: 28 }}>
-            <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                alignItems: "flex-end",
+                justifyContent: "center", // Center the bar visualization
+              }}
+            >
               {scoreContributions.map((v, i) => (
                 <div
                   key={i}
@@ -306,7 +349,15 @@ const AttentionModule = ({ inputText }) => {
       </div>
 
       {/* Attention weights */}
-      <div style={{ marginBottom: 20 }}>
+      <div
+        style={{
+          marginBottom: 20,
+          display: "flex", // Make this section container flex
+          flexDirection: "column", // Stack items vertically
+          alignItems: "center", // Center items horizontally
+          width: "100%", // Take up full width for centering
+        }}
+      >
         <p>
           <strong>Attention Weights (softmaxed):</strong>
         </p>
@@ -337,11 +388,18 @@ const AttentionModule = ({ inputText }) => {
       </div>
 
       {/* Output */}
-      <div>
+      <div
+        style={{
+          display: "flex", // Make this section container flex
+          flexDirection: "column", // Stack items vertically
+          alignItems: "center", // Center items horizontally
+          width: "100%", // Take up full width for centering
+        }}
+      >
         <p>
           <strong>Output = Attention·V:</strong>
         </p>
-        <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
           {head.output.map((row, rIdx) => (
             <div key={rIdx}>
               <div style={{ textAlign: "center" }}>{tokens[rIdx].word}</div>
